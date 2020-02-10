@@ -1,4 +1,5 @@
-
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 #
 # Copyright (c) 2014-2015 University of Dundee.
 #
@@ -1293,6 +1294,27 @@ class FigureExport(object):
         scale_to_canvas = panel['width'] / float(region_width)
         canvas_length = pixels_length * scale_to_canvas
 
+        unit_symbols = {
+            "PICOMETER": {'symbol': "pm", 'microns': 0.000001},
+            "ANGSTROM": {'symbol': "A", 'microns': 0.0001},
+            "NANOMETER": {'symbol': "nm", 'microns': 0.001},
+            "MICROMETER": {'symbol': "um", 'microns': 1},
+            "MILLIMETER": {'symbol': "mm", 'microns': 1000},
+            "CENTIMETER": {'symbol': "cm", 'microns': 10000},
+            "METER": {'symbol': "m", 'microns': 1000000},
+            "KILOMETER": {'symbol': "km", 'microns': 1000000000},
+            "MEGAMETER": {'symbol': "Mm", 'microns': 1000000000000}
+        }
+
+        pixel_unit = panel.get('pixel_size_x_unit')
+        # if older file doesn't have scalebar.unit, use pixel unit
+        scalebar_unit = sb.get('units', pixel_unit)
+        if pixel_unit in unit_symbols and scalebar_unit in unit_symbols:
+            convert_factor = (unit_symbols[scalebar_unit]['microns'] /
+                              unit_symbols[pixel_unit]['microns'])
+            canvas_length = convert_factor * canvas_length
+
+        canvas_length = int(round(canvas_length))
         if align == 'left':
             lx_end = lx + canvas_length
         else:
@@ -1304,6 +1326,8 @@ class FigureExport(object):
             symbol = u"\u00B5m"
             if 'pixel_size_x_symbol' in panel:
                 symbol = panel['pixel_size_x_symbol']
+            if scalebar_unit and scalebar_unit in unit_symbols:
+                symbol = unit_symbols[scalebar_unit]['symbol']
             label = "%s %s" % (sb['length'], symbol)
             font_size = 10
             try:
@@ -2130,7 +2154,7 @@ class TiffExport(FigureExport):
         elif align == "center":
             x = x - (temp_label.size[0] / 2)
         elif align == "right":
-                x = x - temp_label.size[0]
+            x = x - temp_label.size[0]
         x = int(round(x))
         y = int(round(y))
         # Use label as mask, so transparent part is not pasted
