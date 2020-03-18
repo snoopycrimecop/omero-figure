@@ -26,9 +26,9 @@ from setuptools.command.build_py import build_py
 from setuptools.command.install import install
 from setuptools.command.sdist import sdist
 from setuptools.command.develop import develop
-from setuptools import setup, find_packages
+from setuptools import setup
 from setuptools.command.test import test as test_command
-import omero_figure.utils as utils
+import src.omero_figure.utils as utils
 
 VERSION = utils.__version__
 
@@ -112,7 +112,7 @@ def require_npm(command, strict=False):
     class WrappedCommand(command):
         def run(self):
             if strict or not os.path.exists(
-                    'omero_figure/static/figure/figure.js'):
+                    'src/omero_figure/static/figure/figure.js'):
                 self.spawn(['npm', 'install'])
                 self.spawn(['grunt', 'jst'])
                 self.spawn(['grunt', 'concat'])
@@ -123,7 +123,8 @@ def require_npm(command, strict=False):
 
 
 setup(name="omero-figure",
-      packages=find_packages(exclude=['ez_setup']),
+      packages=['', 'omero_figure'],
+      package_dir={"": "src"},
       version=VERSION,
       description=DESCRIPTION,
       long_description=utils.read_file('README.rst'),
