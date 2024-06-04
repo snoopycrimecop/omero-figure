@@ -33,6 +33,11 @@ urlpatterns = [
     re_path(r'^imgData/(?P<image_id>[0-9]+)/$', views.img_data_json,
             name='figure_imgData'),
 
+    re_path(r'^max_projection_range_exceeded/'
+            r'(?P<iid>[0-9]+)/(?:(?P<z>[0-9]+)/)?(?:(?P<t>[0-9]+)/)?$',
+            views.max_projection_range_exceeded,
+            name='max_projection_range_exceeded'),
+
     # Send json to OMERO to create pdf using scripting service
     re_path(r'^make_web_figure/', views.make_web_figure,
             name='make_web_figure'),
@@ -75,6 +80,9 @@ urlpatterns = [
     # Get timestamps in seconds for images
     # Use query ?image=1&image=2
     re_path(r'^timestamps/$', views.timestamps, name='figure_timestamps'),
+
+    # Get pixelsType for images. Use query ?image=1&image=2
+    re_path(r'^pixels_type/$', views.pixels_type, name='figure_pixels_type'),
 
     # Get Z scale for images
     # Use query ?image=1&image=2
